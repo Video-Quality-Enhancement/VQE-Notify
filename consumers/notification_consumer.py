@@ -2,14 +2,10 @@ import pika, os, sys
 from models import EnhancedVideoNotifyRequest
 
 
-def send_notification_type(notify_request: EnhancedVideoNotifyRequest):
-    pass
-
-
-def notification_consumer(queue_name: str, routing_key: str, send_notification: send_notification_type):
+def notification_consumer(queue_name: str, routing_key: str, send_notification: callable):
 
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-    channel = connection.create_channel()
+    channel = connection.channel()
 
     exchange = "enhanced.video.notification"
     channel.exchange_declare(exchange=exchange, exchange_type="topic", durable=True)
@@ -26,7 +22,7 @@ def notification_consumer(queue_name: str, routing_key: str, send_notification: 
             send_notification(notify_request)
         except Exception as e:
             print("error sending notification", e)
-            ch.basic_nack(delivery_tag=method.delivery_tag)
+            ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
         else:
             ch.basic_ack(delivery_tag=method.delivery_tag)
     
