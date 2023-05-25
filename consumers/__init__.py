@@ -1,5 +1,5 @@
-from .notification_consumer import notification_consumer
+from .enhanced_video_notify_consumer import enhanced_video_notify_consumer
 
 __all__ = [
-    notification_consumer
+    enhanced_video_notify_consumer
 ]

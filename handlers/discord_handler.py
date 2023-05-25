@@ -1,7 +1,7 @@
 from models import DiscordClient
 import os
 from threading import Thread
-from consumers import notification_consumer
+from consumers import enhanced_video_notify_consumer
 from services import DiscordService
 
 def discord_handler():
@@ -14,9 +14,12 @@ def discord_handler():
     @client.event
     async def on_ready():
         print(f'Logged on as {client.user}!')
+        print("starting discord consumer")
         
-        t = Thread(target=notification_consumer, args=(queue, routing_key, service.send_discord_notification))
-        t.daemon = True
+        t = Thread(
+            target=enhanced_video_notify_consumer, 
+            args=(queue, routing_key, service), 
+            daemon=True)
         t.start()
         
         print("consumer started")

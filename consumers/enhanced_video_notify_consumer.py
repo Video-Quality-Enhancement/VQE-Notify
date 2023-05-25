@@ -1,10 +1,11 @@
 import pika, os, sys
 from models import EnhancedVideoNotifyRequest
+from services.abstracts import EnhancedVideoNotify
 
 
-def notification_consumer(queue_name: str, routing_key: str, send_notification: callable):
+def enhanced_video_notify_consumer(queue_name: str, routing_key: str, enhanced_video_notify: EnhancedVideoNotify):
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("AMQP_URL")))
     channel = connection.channel()
 
     exchange = "enhanced.video.notification"
@@ -19,7 +20,7 @@ def notification_consumer(queue_name: str, routing_key: str, send_notification: 
     def callback(ch, method, properties, body):
         notify_request = EnhancedVideoNotifyRequest.loads(body)
         try:
-            send_notification(notify_request)
+            enhanced_video_notify.notify(notify_request)
         except Exception as e:
             print("error sending notification", e)
             ch.basic_nack(delivery_tag=method.delivery_tag, requeue=True)
