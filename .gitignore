@@ -4,3 +4,4 @@ venv/
 temp/
 auth/credentials.json
 auth/token.json
+auth/*sa.key.json

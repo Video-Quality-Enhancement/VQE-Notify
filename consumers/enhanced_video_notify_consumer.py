@@ -5,7 +5,8 @@ from services.abstracts import EnhancedVideoNotify
 
 def enhanced_video_notify_consumer(queue_name: str, routing_key: str, enhanced_video_notify: EnhancedVideoNotify):
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=os.getenv("AMQP_URL")))
+    parameters = pika.URLParameters(os.getenv("AMQP_URL"))
+    connection = pika.BlockingConnection(parameters)
     channel = connection.channel()
 
     exchange = "enhanced.video.notification"
